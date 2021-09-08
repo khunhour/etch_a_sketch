@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etch-a-Sketch</title>
+    <link rel="stylesheet" href = "style.css">
+</head>
+<body>
+    <h1>Etch-a-Sketch</h1>
+    <div class="menu">
+        <button id="clear" class="button">CLEAR</button>
+        <button id="black" class="button">BLACK</button>
+        <button id="rainbow" class="button">RAINBOW</button>
+        <button id="special" class="button">MEME</button>
+    </div>
+    <div class="menu">
+        <p>SIZE: </p>
+        <p id="value">16x16</p>
+        <input id ="slider" class="slider" autocomplete="off" type="range" min="2" max="64" value="16" name="size:" step="2">
+    </div>
+    <div class="container containerMeme"></div>
+</body>
+<script>
+    let currentMode="meme";
+    let number=16;
+    const slider = document.getElementById("slider");
+    const value = document.getElementById("value");
+    const container = document.querySelector('.container');
+
+    slider.oninput = function(){
+        value.innerHTML = `${this.value}x${this.value}`;
+        number = this.value;
+        changecolor();      //clear board
+    };
+    //create divs in white and add eventlistener hover
+    createDivs(number);
+
+    function createDivs(number){
+        //clear up all create divs in container
+        container.innerHTML="";
+        //create grid by adding style
+        container.style.cssText = `grid-template-columns: repeat(${number}, 1fr); grid-template-rows: repeat(${number}, 1fr);`
+        
+        for(i=1; i<=number*number; i++){
+            const divs = document.createElement('div');
+            divs.classList.add("square");
+            divs.setAttribute('id', i);
+            container.appendChild(divs);
+
+            const hover = divs.addEventListener("mouseover", function(e){
+                if(currentMode==="rainbow"){
+                    divs.style.cssText=`background-color: ${randomrgb()};`;
+                }
+                else{
+                   divs.classList.add("hover"); 
+                }
+                
+            });
+        }   
+    }
+    //add Eventlistener to buttons
+    const buttons = document.querySelectorAll("#clear, #black, #rainbow, #special");
+    buttons.forEach((button) => {
+        button.addEventListener('click', changecolor);
+    });
+    //change color according to buttons
+    function changecolor(e){
+        //clear the screen first
+        createDivs(number);
+        //each color function
+        if(e.target.id === "rainbow"){
+            container.classList.remove("containerMeme");
+            currentMode = "rainbow";
+        }
+        else if(e.target.id === "special"){
+            container.classList.add("containerMeme");
+            currentMode = "special";
+        }
+        else if(e.target.id === "black"){
+            container.classList.remove("containerMeme");
+            currentMode = "black";
+        }
+    }
+    function randomrgb(){
+        let round = Math.round;
+        let random = Math.random;
+        return `rgb(${round(random()*255)},${round(random()*255)},${round(random()*255)})`;
+    }
+</script>
+</html>
